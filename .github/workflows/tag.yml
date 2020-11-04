@@ -10,7 +10,9 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: '12.x'
-      - run: yarn release
+      - run: |
+          yarn install
+          yarn release
         if: github.ref == 'refs/heads/main'
         env:
           CI: true
