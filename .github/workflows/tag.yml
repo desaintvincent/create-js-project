@@ -6,7 +6,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Tag application
+      - name: Use Node.js
         uses: actions/setup-node@v1
-        run: yarn release
+        with:
+          node-version: '12.x'
+      - run: yarn release
         if: github.ref == 'refs/heads/main'
+        env:
+          CI: true
