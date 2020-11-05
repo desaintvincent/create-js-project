@@ -1,1 +1,3 @@
-console.log('aa')
+let aa = 1
+aa++
+console.log('aa', aa)
