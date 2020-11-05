@@ -2,8 +2,8 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-// const autoprefixer = require('autoprefixer')
-// const cssnano = require('cssnano')
+const autoprefixer = require('autoprefixer')
+const cssnano = require('cssnano')
 const packageJson = require('./package.json')
 const isDevelopment = process.env.NODE_ENV === 'development'
 
@@ -16,11 +16,11 @@ module.exports = {
     : {}),
   entry: {
     app: './src/js/index.js',
-    styles: './src/scss/main.scss',
+    style: './src/scss/style.scss',
   },
   output: {
     filename: '[name].bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'public'),
   },
   module: {
     rules: [
@@ -32,7 +32,7 @@ module.exports = {
           // Load the CSS, set url = false to prevent following urls to fonts and images.
           { loader: 'css-loader', options: { url: false, importLoaders: 1 } },
           // Add browser prefixes and minify CSS.
-          { loader: 'postcss-loader', options: { plugins: [] } },
+          { loader: 'postcss-loader'},
           // Load the SCSS/SASS
           { loader: 'sass-loader' },
         ],
