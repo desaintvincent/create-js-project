@@ -11,6 +11,10 @@ body {
   margin: 0;
   padding: 0;
 
+  &:fullscreen {
+    background-color: pink; // propriété CSS peu supportée par les navigateurs qui devrait être auto-préfixée en mode production
+  }
+
   h1 {
     color: $base-color;
   }

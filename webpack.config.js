@@ -33,7 +33,10 @@ module.exports = {
       }
     : {}),
   entry: {
-    main: path.resolve(__dirname, './src/js/index.js'),
+    main: [
+      path.resolve(__dirname, './src/js/index.js'),
+      path.resolve(__dirname, './src/scss/style.scss'),
+    ],
   },
   output: {
     path: path.resolve(__dirname, 'public'),
