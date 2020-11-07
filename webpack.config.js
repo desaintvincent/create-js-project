@@ -2,10 +2,28 @@
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
-const autoprefixer = require('autoprefixer')
-const cssnano = require('cssnano')
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const packageJson = require('./package.json')
 const isDevelopment = process.env.NODE_ENV === 'development'
+
+const plugins = [
+  new HtmlWebpackPlugin({
+    title: packageJson.name || 'title',
+    favicon: 'assets/favicon.ico',
+    meta: {
+      description: packageJson.description || 'description',
+      version: packageJson.version,
+    },
+    template: 'src/index.html',
+  }),
+  new CleanWebpackPlugin(),
+]
+if (!isDevelopment) {
+  plugins.push(new MiniCssExtractPlugin({
+    filename: '[name].[contenthash].css',
+    chunkFilename: '[id].[contenthash].css',
+  }))
+}
 
 module.exports = {
   mode: process.env.NODE_ENV || 'development',
@@ -15,49 +33,49 @@ module.exports = {
       }
     : {}),
   entry: {
-    app: './src/js/index.js',
-    style: './src/scss/style.scss',
+    main: path.resolve(__dirname, './src/js/index.js'),
   },
   output: {
-    filename: '[name].bundle.js',
     path: path.resolve(__dirname, 'public'),
+    filename: '[name].[contenthash].js',
   },
   module: {
     rules: [
+      // JavaScript
       {
-        test: /\.scss$/,
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: ['babel-loader'],
+      },
+      // Images
+      {
+        test: /\.(?:ico|gif|png|jpg|jpeg)$/i,
+        type: 'asset/resource',
+      },
+      // Fonts and SVGs
+      {
+        test: /\.(woff(2)?|eot|ttf|otf|svg|)$/,
+        type: 'asset/inline',
+      },
+      // CSS, PostCSS, and Sass
+      {
+        test: /\.(sa|sc|c)ss$/,
         use: [
-          // Extract and save the final CSS.
-          MiniCssExtractPlugin.loader,
-          // Load the CSS, set url = false to prevent following urls to fonts and images.
-          { loader: 'css-loader', options: { url: false, importLoaders: 1 } },
-          // Add browser prefixes and minify CSS.
-          { loader: 'postcss-loader'},
-          // Load the SCSS/SASS
-          { loader: 'sass-loader' },
+          isDevelopment ? 'style-loader' : MiniCssExtractPlugin.loader,
+          'css-loader',
+          'postcss-loader',
+          'sass-loader',
         ],
       },
     ],
   },
-  plugins: [
-    new HtmlWebpackPlugin({
-      title: packageJson.name || 'title',
-      favicon: 'assets/favicon.ico',
-      meta: {
-        description: packageJson.description || 'description',
-        version: packageJson.version,
-      },
-      template: 'src/index.html',
-    }),
-    new MiniCssExtractPlugin({
-      filename: isDevelopment ? '[name].css' : '[name].[hash].css',
-      chunkFilename: isDevelopment ? '[id].css' : '[id].[hash].css',
-    }),
-  ],
+  plugins,
   devServer: {
-    contentBase: path.join(__dirname, 'dist'),
-    compress: true,
-    port: 9000,
+    historyApiFallback: true,
+    contentBase: path.resolve(__dirname, './public'),
     open: true,
+    compress: true,
+    hot: true,
+    port: 9000,
   },
 }
