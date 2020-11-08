@@ -1,28 +1,27 @@
 {
-  "name": "starter",
+  "name": "starter-front",
   "description": "starter description",
   "keywords": [
-    "short",
-    "relevant",
-    "keywords",
-    "for",
-    "searching"
+    "starter",
+    "front",
+    "javascript",
+    "scss"
   ],
-  "version": "1.0.0",
+  "author": "Thomas Robert de Saint Vincent <destvincent@hotmail.fr>",
   "repository": {
     "type": "git",
     "url": "https://github.com/desaintvincent/starter.git"
   },
+  "license": "MIT",
+  "private": true,
+  "version": "1.0.0",
   "release": {
     "branches": [
       "master",
       "main"
     ]
   },
-  "author": "Thomas Robert de Saint Vincent <destvincent@hotmail.fr>",
-  "license": "MIT",
   "main": "src/index.js",
-  "private": true,
   "engines": {
     "node": ">=12.19.0",
     "yarn": "^1.22.5"
@@ -32,7 +31,8 @@
     "clean": "rm -rf node_modules dist",
     "build": "NODE_ENV=production webpack",
     "start": "webpack serve --mode development",
-    "lint": "eslint -c .eslintrc.js ./src ./README.md --ext .js,md",
+    "lint:js": "eslint -c .eslintrc.js ./src/js ./README.md --ext .js,md",
+    "lint:scss": "stylelint ./src/scss/**/*.scss",
     "format": "yarn lint -- --fix",
     "semantic-release": "semantic-release"
   },
@@ -56,6 +56,8 @@
     "postcss-preset-env": "6.7.0",
     "sass-loader": "10.0.5",
     "style-loader": "2.0.0",
+    "stylelint": "13.7.2",
+    "stylelint-config-sass-guidelines": "7.1.0",
     "webpack": "5.4.0",
     "webpack-cli": "4.2.0",
     "webpack-dev-server": "3.11.0"
