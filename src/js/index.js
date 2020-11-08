@@ -1,4 +1,4 @@
-import add from './add'
+import { add } from './math'
 
 const additionResult = add(1, 1)
 

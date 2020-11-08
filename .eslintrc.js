@@ -1,13 +1,12 @@
+const WARN = 1
+
 module.exports = {
   env: {
     browser: true,
     es6: true,
+    jest: true,
   },
-  extends: ['standard', 'plugin:md/recommended'],
-  globals: {
-    Atomics: 'readonly',
-    SharedArrayBuffer: 'readonly',
-  },
+  extends: ['standard', 'plugin:md/recommended', 'plugin:jest/recommended'],
   parserOptions: {
     ecmaVersion: 2018,
     sourceType: 'module',
@@ -19,8 +18,10 @@ module.exports = {
     },
   ],
   rules: {
-    'no-console': 1,
+    'no-console': WARN,
     'no-else-return': ['error'],
+    semi: ['error', 'never'],
+    'no-extra-semi': ['error'],
     'newline-before-return': ['error'],
     'comma-dangle': [
       'error',
