@@ -2,6 +2,10 @@
 $font-size: 1rem;
 $font-color: #333;
 
+* {
+  box-sizing: border-box;
+}
+
 html {
   color: $font-color;
   font-size: $font-size;

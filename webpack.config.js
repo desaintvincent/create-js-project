@@ -1,10 +1,12 @@
 // webpack.config.js
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
+const HtmlWebpackPartialsPlugin = require('html-webpack-partials-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const packageJson = require('./package.json')
-const isDevelopment = process.env.NODE_ENV === 'development'
+const mode = process.env.NODE_ENV || 'development'
+const isDevelopment = mode === 'development'
 
 const plugins = [
   new HtmlWebpackPlugin({
@@ -14,7 +16,19 @@ const plugins = [
       description: packageJson.description || 'description',
       version: packageJson.version,
     },
-    template: 'src/index.html',
+    templateContent: ({ htmlWebpackPlugin }) => `
+    <!doctype html>
+      <html lang="${htmlWebpackPlugin.options.lang || 'en'}">
+      <head>
+        <meta charset="UTF-8">
+        <title>${htmlWebpackPlugin.options.title}</title>
+      </head>
+      <body></body>
+    </html>
+  `,
+  }),
+  new HtmlWebpackPartialsPlugin({
+    path: 'src/html/body.html',
   }),
   new CleanWebpackPlugin(),
 ]
@@ -26,7 +40,7 @@ if (!isDevelopment) {
 }
 
 module.exports = {
-  mode: process.env.NODE_ENV || 'development',
+  mode,
   ...(isDevelopment
     ? {
         devtool: 'inline-source-map',
