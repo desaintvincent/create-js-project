@@ -2,19 +2,32 @@ name: Tag
 on:
   workflow_dispatch:
 jobs:
-  tag:
+  tag-and-deploy:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
           node-version: '12.x'
-      - run: |
-          yarn install
-          yarn release
-        if: github.ref == 'refs/heads/main'
+
+      - name: Install Pacakges
+        run: yarn install
+
+      - name: Build
+        run: yarn build
+
+      - name: Semantic Release
+        run: yarn release
         env:
           CI: true
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.GH_TOKEN }}
+          publish_dir: ./public
