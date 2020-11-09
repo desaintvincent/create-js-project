@@ -1,0 +1,1 @@
+(()=>{"use strict";setTimeout((function(){console.log("the arrow function should disapear and display ".concat(2))}),500)})();
