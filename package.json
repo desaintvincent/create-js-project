@@ -33,8 +33,9 @@
     "start": "webpack serve --mode development",
     "lint:js": "eslint -c .eslintrc.js . --ext .js,md",
     "lint:scss": "stylelint ./src/scss/**/*.scss",
-    "format": "yarn lint -- --fix",
-    "test": "jest"
+    "format": "yarn lint:js -- --fix",
+    "test": "jest",
+    "check-git": "git status -uno --porcelain && [ -z \"$(git status -uno --porcelain)\" ] || (echo 'Git working directory not clean'; false)"
   },
   "devDependencies": {
     "@babel/core": "7.12.3",
