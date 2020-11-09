@@ -15,12 +15,6 @@
   "license": "MIT",
   "private": true,
   "version": "1.0.0",
-  "release": {
-    "branches": [
-      "master",
-      "main"
-    ]
-  },
   "main": "src/index.js",
   "engines": {
     "node": ">=12.19.0",
