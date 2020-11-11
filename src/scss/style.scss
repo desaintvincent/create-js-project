@@ -1,21 +1,23 @@
-@import './color';
-$font-size: 1rem;
-$font-color: #333;
-
 * {
   box-sizing: border-box;
-}
-
-html {
-  color: $font-color;
-  font-size: $font-size;
 }
 
 body {
   margin: 0;
   padding: 0;
+}
 
-  h1 {
-    color: $base-color;
+$breakpoints: (
+  mobile: 0,
+  tablet: 760px,
+  desktop: 1024px,
+  large: 1200px,
+);
+
+@mixin breakpoint($breakpointName) {
+  @media screen and (min-width: map-get($breakpoints, $breakpointName)) {
+    @content;
   }
 }
+
+@import './site';
