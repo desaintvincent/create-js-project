@@ -1,8 +1,10 @@
 {
-  "name": "starter-front",
-  "description": "starter description",
+  "name": "create-js-project",
+  "description": "Create a javascript project ready to code",
   "keywords": [
-    "starter",
+    "create",
+    "project",
+    "template",
     "front",
     "javascript",
     "scss"
@@ -10,7 +12,7 @@
   "author": "Thomas Robert de Saint Vincent <destvincent@hotmail.fr>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/desaintvincent/starter.git"
+    "url": "https://github.com/desaintvincent/create-js-project.git"
   },
   "license": "MIT",
   "private": true,
