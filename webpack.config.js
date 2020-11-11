@@ -1,35 +1,49 @@
 // webpack.config.js
 const path = require('path')
+const webpack = require('webpack')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const HtmlWebpackPartialsPlugin = require('html-webpack-partials-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const packageJson = require('./package.json')
 const mode = process.env.NODE_ENV || 'development'
 const isDevelopment = mode === 'development'
 
+let devServer = null // set below in devserver part
+
+class HotReloadHtml {
+  constructor () {
+    this.name = 'HotReloadHtml'
+    this.cache = {}
+  }
+
+  apply (compiler) {
+    compiler.hooks.compilation.tap(this.name, compilation => {
+      HtmlWebpackPlugin.getHooks(compilation).afterTemplateExecution.tap(this.name, (data) => {
+        const orig = this.cache[data.outputName]
+        const html = data.html
+        if (devServer && orig && orig !== html) {
+          devServer.sockWrite(devServer.sockets, 'content-changed')
+        }
+        this.cache[data.outputName] = html
+      })
+    })
+  }
+}
+
 const plugins = [
   new HtmlWebpackPlugin({
     title: packageJson.name || 'title',
     favicon: 'assets/favicon.ico',
     meta: {
+      viewport: 'width=device-width, initial-scale=1.0',
       description: packageJson.description || 'description',
       version: packageJson.version,
     },
-    templateContent: ({ htmlWebpackPlugin }) => `
-    <!doctype html>
-      <html lang="${htmlWebpackPlugin.options.lang || 'en'}">
-      <head>
-        <meta charset="UTF-8">
-        <title>${htmlWebpackPlugin.options.title}</title>
-      </head>
-      <body></body>
-    </html>
-  `,
+    body: './body.html',
+    template: path.resolve(__dirname, './src/html/html.js'),
   }),
-  new HtmlWebpackPartialsPlugin({
-    path: 'src/html/body.html',
-  }),
+  new HotReloadHtml(),
+  new webpack.HotModuleReplacementPlugin(),
   new CleanWebpackPlugin(),
 ]
 if (!isDevelopment) {
@@ -58,6 +72,11 @@ module.exports = {
   },
   module: {
     rules: [
+      // html
+      {
+        test: /\.html$/i,
+        loader: 'html-loader',
+      },
       // JavaScript
       {
         test: /\.js$/,
@@ -93,6 +112,10 @@ module.exports = {
     open: true,
     compress: true,
     hot: true,
+    watchContentBase: true,
     port: 9000,
+    before (app, server) {
+      devServer = server
+    },
   },
 }

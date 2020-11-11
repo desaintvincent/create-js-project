@@ -1,12 +1,10 @@
 # [1.1.0](https://github.com/desaintvincent/starter/compare/v1.0.2...v1.1.0) (2020-11-09)
 
-
 ### Features
 
 * **cd:** deploy on github page ([5b1631c](https://github.com/desaintvincent/starter/commit/5b1631cb8cfcf9d85151603cae19f39f280c44db))
 
 ## [1.0.2](https://github.com/desaintvincent/starter/compare/v1.0.1...v1.0.2) (2020-11-09)
-
 
 ### Bug Fixes
 
@@ -14,19 +12,16 @@
 
 ## [1.0.1](https://github.com/desaintvincent/starter/compare/v1.0.0...v1.0.1) (2020-11-09)
 
-
 ### Bug Fixes
 
 * **cd:** release chnges to git repository ([0a1a3ef](https://github.com/desaintvincent/starter/commit/0a1a3ef3e338d900ec71f9a4521de4b3a9dda534))
 
 # 1.0.0 (2020-11-09)
 
-
 ### Bug Fixes
 
 * **ci:** fix tag trigger ([6372eab](https://github.com/desaintvincent/starter/commit/6372eab6eb7e9b2e785c5746f4799e4af1d8513e))
 * **ci:** install deps before use them ([1be7a3d](https://github.com/desaintvincent/starter/commit/1be7a3d00e3c0ac6ef578c22e8a185343d9ff892))
-
 
 ### Features
 
@@ -37,4 +32,3 @@
 * **css:** use scss ([0bbcb73](https://github.com/desaintvincent/starter/commit/0bbcb73670b8f9f18499e03a200ef98189420a98))
 * **html:** use partial ([98e9634](https://github.com/desaintvincent/starter/commit/98e96343cfabb4b271a208f8d31dfdff0d8b96dd))
 * **test:** add jest to test js ([ec71372](https://github.com/desaintvincent/starter/commit/ec71372c323d455862442fc554a75f37ebec9979))
-

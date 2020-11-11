@@ -1,0 +1,33 @@
+$bg: #282c34;
+$fg: #fff;
+$spacing: 10px;
+
+body {
+  background-color: $bg;
+  color: $fg;
+
+  #root {
+    padding: 0 $spacing;
+    @include breakpoint('large') {
+      margin: auto;
+      max-width: map-get($breakpoints, 'large');
+    }
+  }
+}
+
+.responsive {
+  &::after {
+    @include breakpoint('mobile') {
+      content: 'I am detected as mobile';
+    }
+    @include breakpoint('tablet') {
+      content: 'I am detected as tablet';
+    }
+    @include breakpoint('desktop') {
+      content: 'I am detected as desktop';
+    }
+    @include breakpoint('large') {
+      content: 'I am detected as large';
+    }
+  }
+}

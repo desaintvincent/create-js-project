@@ -18,6 +18,7 @@ module.exports = {
     },
   ],
   rules: {
+    'md/remark': 'off',
     'no-console': WARN,
     'no-else-return': ['error'],
     semi: ['error', 'never'],
