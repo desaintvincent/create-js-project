@@ -1,6 +1,8 @@
 #Starter front
 
-![tests][tests]
+[![release][releaseBadge]]([releaseUrl])
+[![test][testBadge]]([testUrl])
+
 ## Install
 ```sh
 yarn install
@@ -17,4 +19,7 @@ yarn install
 ## Features
 - lint commits
 
-[tests]: https://github.com/desaintvincent/starter/workflows/Tests/badge.svg
+[testUrl]: https://github.com/desaintvincent/starter/actions?query=branch%3Amain
+[testBadge]: https://github.com/desaintvincent/starter/workflows/Tests/badge.svg
+[releaseUrl]: https://github.com/desaintvincent/starter/releases
+[releaseBadge]: https://img.shields.io/github/v/release/desaintvincent/starter
