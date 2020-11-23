@@ -1,24 +1,20 @@
+#Starter front
+
+![tests][tests]
 ## Install
 ```sh
 yarn install
 ```
 ## Run
-```sh
-yarn dev
-```
+| command       | description           |
+|---------------|-----------------------|
+| yarn dev      | run in dev mode       |
+| yarn build    | build the application |
+| yarn lint:js  | lint all js files     |
+| yarn lint:css | lint all css files    |
+| yarn test     | run unit tests        |
 
-## Build
-```sh
-yarn build
-```
+## Features
+- lint commits
 
-## Tests
-  - Format
-    ```sh
-    yarn format
-    ```
-
-  - Lint
-    ```sh
-    yarn lint
-    ```
+[tests]: https://github.com/desaintvincent/starter/workflows/Tests/badge.svg

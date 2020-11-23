@@ -27,6 +27,7 @@
     "start": "webpack serve --mode development",
     "lint:js": "eslint -c .eslintrc.js . --ext .js,md",
     "lint:scss": "stylelint ./src/scss/**/*.scss",
+    "lint:commit": "commitlint",
     "format:js": "yarn lint:js -- --fix",
     "format:scss": "yarn lint:scss -- --fix",
     "test": "jest",
@@ -35,6 +36,8 @@
   "devDependencies": {
     "@babel/core": "7.12.3",
     "@babel/preset-env": "7.12.1",
+    "@commitlint/cli": "11.0.0",
+    "@commitlint/config-conventional": "11.0.0",
     "@semantic-release/changelog": "5.0.1",
     "@semantic-release/commit-analyzer": "8.0.1",
     "@semantic-release/git": "9.0.0",
