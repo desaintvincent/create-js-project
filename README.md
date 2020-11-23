@@ -2,6 +2,7 @@
 
 [![release][releaseBadge]]([releaseUrl])
 [![test][testBadge]]([testUrl])
+![release][licenseBadge]
 
 ## Install
 ```sh
@@ -20,6 +21,7 @@ yarn install
 - lint commits
 
 [testUrl]: https://github.com/desaintvincent/starter/actions?query=branch%3Amain
-[testBadge]: https://github.com/desaintvincent/starter/workflows/Tests/badge.svg
+[testBadge]: https://img.shields.io/github/workflow/status/desaintvincent/starter/Tests?label=tests
 [releaseUrl]: https://github.com/desaintvincent/starter/releases
 [releaseBadge]: https://img.shields.io/github/v/release/desaintvincent/starter
+[licenseBadge]: https://img.shields.io/github/license/desaintvincent/starter

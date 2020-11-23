@@ -4,8 +4,9 @@ const fs = require('fs')
 const { exec } = require('child_process')
 
 const dryRun = process.argv.includes('--dry-run') || true
-const yessAll = process.argv.includes('-y') || process.argv.includes('--yes') || true
-const starterName = 'desaintvincent/starter'
+const yessAll = process.argv.includes('-y') || process.argv.includes('--yes')
+const originalGithubUserName = 'desaintvincent'
+const originalProjectName = 'starter'
 const data = {
   project: {
     name: path.basename(process.cwd()),
@@ -97,8 +98,11 @@ async function createPackageJson () {
 }
 
 async function createReadme () {
-  const readme = await getFile('README.md')
-  await writeFile('README.md', readme.replace(new RegExp(starterName, 'g'), `${data.git.user}/${data.project.name}`))
+  const readme = await getFile('README.md')// originalGithubUserName
+  await writeFile('README.md', readme
+    .replace(new RegExp(originalGithubUserName, 'g'), data.git.user)
+    .replace(new RegExp(originalProjectName, 'g'), data.project.name),
+  )
 }
 
 async function createChangelog () {
@@ -130,7 +134,11 @@ async function git () {
   await run('git commit -m "feat(core): init project')
   await run('git branch -M main')
   await run(`git remote add origin git@github.com:${data.git.user}/${data.project.name}.git`)
-  await run('git push -u origin main')
+  try {
+    await run('git push -u origin main')
+  } catch (err) {
+    // do nothing yet
+  }
 }
 
 async function clean () {
