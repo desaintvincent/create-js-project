@@ -2,11 +2,13 @@
 const path = require('path')
 const fs = require('fs')
 const { exec } = require('child_process')
+const { version } = require('../package.json')
 
-const dryRun = process.argv.includes('--dry-run') || true
-const yessAll = process.argv.includes('-y') || process.argv.includes('--yes')
+const dryRun = process.argv.includes('--dry-run') || false
+const yessAll = process.argv.includes('-y') || process.argv.includes('--yes') || false
+const noGit = process.argv.includes('-g') || process.argv.includes('--no-git') || false
 const originalGithubUserName = 'desaintvincent'
-const originalProjectName = 'starter'
+const originalProjectName = 'create-js-project'
 const data = {
   project: {
     name: path.basename(process.cwd()),
@@ -14,9 +16,10 @@ const data = {
     keywords: 'just,some,keywords',
   },
   git: {
-    user: '',
+    user: 'fakeUser',
   },
 }
+
 const readline = require('readline').createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -82,7 +85,7 @@ async function populateAllData () {
   data.project.name = await question('What is your project name?', data.project.name)
   data.project.description = await question('What is your project description?', data.project.description)
   data.project.keywords = await question('What is your project keywords?', data.project.keywords)
-  data.git.user = process.env.GIT_USER || await question('What is your git user?')
+  data.git.user = process.env.GIT_USER || await question('What is your git user?', data.git.user)
   readline.close()
 }
 
@@ -98,10 +101,19 @@ async function createPackageJson () {
 }
 
 async function createReadme () {
-  const readme = await getFile('README.md')// originalGithubUserName
+  const readme = await getFile('README.md')
   await writeFile('README.md', readme
+    .replace(/<!--- -->((.|\n)*)<!--- -->/gmis, `${data.project.description}\n#install\n\`\`\`sh\nyarn install\n\`\`\``)
     .replace(new RegExp(originalGithubUserName, 'g'), data.git.user)
     .replace(new RegExp(originalProjectName, 'g'), data.project.name),
+  )
+}
+
+async function createLicense () {
+  const license = await getFile('LICENSE')
+  await writeFile('LICENSE', license
+    .replace(new RegExp(originalGithubUserName, 'g'), data.git.user)
+    .replace(/Copyright \(c\) \d{4}/gi, `Copyright (c) ${new Date().getFullYear()}`),
   )
 }
 
@@ -110,24 +122,32 @@ async function createChangelog () {
 }
 
 async function checkRequirements () {
+  console.log(`Using ${originalProjectName} v${version}`)
   if (dryRun) {
-    console.log('Running in dry-run mode')
+    console.log('Running in dry-run mode. All created files will be in ./dryRun folder')
   }
 
   return Promise.all([
     new Promise((resolve, reject) => {
-      fs.mkdir(path.resolve(__dirname, '../dryRun'), '0744', function (err) {
-        if (err && err.code !== 'EEXIST') {
-          reject(err)
-        } else {
-          resolve(true)
-        }
-      })
+      if (dryRun) {
+        fs.mkdir(path.resolve(__dirname, '../dryRun'), '0744', function (err) {
+          if (err && err.code !== 'EEXIST') {
+            reject(err)
+          } else {
+            resolve(true)
+          }
+        })
+      } else {
+        resolve(true)
+      }
     }),
   ])
 }
 
 async function git () {
+  if (noGit) {
+    return
+  }
   await run('rm -rf .git')
   await run('git init')
   await run('git add --all -- \':!internal\'')
@@ -136,13 +156,15 @@ async function git () {
   await run(`git remote add origin git@github.com:${data.git.user}/${data.project.name}.git`)
   try {
     await run('git push -u origin main')
+    console.log(`Github repository pushed: https://github.com/${data.git.user}/${data.project.name}`)
   } catch (err) {
-    // do nothing yet
+    console.log('[warning]: could not push project. Did you create the repos?')
   }
 }
 
 async function clean () {
   await run('rm -rf internal')
+  console.log('All done. Happy coding!')
 }
 
 (async () => {
@@ -151,6 +173,7 @@ async function clean () {
   await Promise.all([
     createPackageJson(),
     createReadme(),
+    createLicense(),
     createChangelog(),
   ])
   await git()

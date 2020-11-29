@@ -45,6 +45,9 @@ const plugins = [
   new HotReloadHtml(),
   new webpack.HotModuleReplacementPlugin(),
   new CleanWebpackPlugin(),
+  new webpack.DefinePlugin({
+    __VERSION__: packageJson.version,
+  }),
 ]
 if (!isDevelopment) {
   plugins.push(new MiniCssExtractPlugin({
