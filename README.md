@@ -7,6 +7,11 @@
 <!--- -->
 Create a javascript project ready to code
 
+## Requirements
+- git
+- node >=12.19.0
+- yarn >=1.22.5
+
 ## Install
 ```sh
 git clone git@github.com:desaintvincent/create-js-project.git my-awesome-project
