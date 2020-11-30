@@ -1,7 +1,7 @@
-#create-js-project [![website][websiteBadge]]([websiteUrl])
+# create-js-project [![website][websiteBadge]][websiteUrl]
 
-[![release][releaseBadge]]([releaseUrl])
-[![test][testBadge]]([testUrl])
+[![release][releaseBadge]][releaseUrl]
+[![test][testBadge]][testUrl]
 ![release][licenseBadge]
 
 <!--- -->
@@ -38,6 +38,10 @@ yarn setup
 | yarn lint:css | lint all css files    |
 | yarn test     | run unit tests        |
 
+## License
+
+[MIT][mit] © [desaintvincent][author]
+
 [testUrl]: https://github.com/desaintvincent/create-js-project/actions?query=branch%3Amain
 [testBadge]: https://img.shields.io/github/workflow/status/desaintvincent/create-js-project/Tests?label=tests
 [releaseUrl]: https://github.com/desaintvincent/create-js-project/releases
@@ -45,3 +49,5 @@ yarn setup
 [websiteUrl]: https://desaintvincent.github.io/create-js-project/
 [releaseBadge]: https://img.shields.io/github/v/release/desaintvincent/create-js-project
 [licenseBadge]: https://img.shields.io/github/license/desaintvincent/create-js-project
+[mit]: http://opensource.org/licenses/MIT
+[author]: http://github.com/desaintvincent

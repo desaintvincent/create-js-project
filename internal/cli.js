@@ -103,15 +103,15 @@ async function createPackageJson () {
 async function createReadme () {
   const readme = await getFile('README.md')
   await writeFile('README.md', readme
-    .replace(/<!--- -->((.|\n)*)<!--- -->/gmis, `${data.project.description}\n#install\n\`\`\`sh\nyarn install\n\`\`\``)
+    .replace(/<!--- -->((.|\n)*)<!--- -->/gmis, `${data.project.description}\n# Install\n\`\`\`sh\nyarn install\n\`\`\``)
     .replace(new RegExp(originalGithubUserName, 'g'), data.git.user)
     .replace(new RegExp(originalProjectName, 'g'), data.project.name),
   )
 }
 
 async function createLicense () {
-  const license = await getFile('LICENSE')
-  await writeFile('LICENSE', license
+  const license = await getFile('LICENSE.md')
+  await writeFile('LICENSE.md', license
     .replace(new RegExp(originalGithubUserName, 'g'), data.git.user)
     .replace(/Copyright \(c\) \d{4}/gi, `Copyright (c) ${new Date().getFullYear()}`),
   )
