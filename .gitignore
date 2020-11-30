@@ -1,6 +1,8 @@
 # Builds
 public
 
+dryRun
+
 # Editor
 .vscode
 .idea

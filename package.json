@@ -31,6 +31,7 @@
     "format:js": "yarn lint:js -- --fix",
     "format:scss": "yarn lint:scss -- --fix",
     "test": "jest",
+    "setup": "node internal/cli.js",
     "check-git": "git status -uno --porcelain && [ -z \"$(git status -uno --porcelain)\" ] || (echo 'Git working directory not clean'; false)"
   },
   "devDependencies": {
