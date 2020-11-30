@@ -97,6 +97,7 @@ async function createPackageJson () {
   packageJsonData.version = '1.0.0'
   packageJsonData.keywords = data.project.keywords.split(',')
   packageJsonData.repository.url = `https://github.com/${data.git.user}/${data.project.name}.git`
+  delete packageJsonData.scripts.setup
   await writeFile('package.json', JSON.stringify(packageJsonData, null, 2))
 }
 
