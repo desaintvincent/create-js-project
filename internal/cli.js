@@ -2,6 +2,7 @@
 const path = require('path')
 const fs = require('fs')
 const { exec } = require('child_process')
+const request = require('request')
 const { version } = require('../package.json')
 
 const dryRun = process.argv.includes('--dry-run') || false
@@ -9,6 +10,7 @@ const yessAll = process.argv.includes('-y') || process.argv.includes('--yes') ||
 const noGit = process.argv.includes('-g') || process.argv.includes('--no-git') || false
 const originalGithubUserName = 'desaintvincent'
 const originalProjectName = 'create-js-project'
+
 const data = {
   project: {
     name: path.basename(process.cwd()),
@@ -16,7 +18,7 @@ const data = {
     keywords: 'just,some,keywords',
   },
   git: {
-    user: 'fakeUser',
+    user: process.env.GIT_USER || 'fakeUser',
   },
 }
 
@@ -35,6 +37,29 @@ function question (questionText, defaultAnswer = '') {
     const text = defaultAnswer ? `${questionText} (${defaultAnswer}) ` : `${questionText} `
     readline.question(text, (answer) => {
       resolve(answer || defaultAnswer || question(questionText, defaultAnswer))
+    })
+  })
+}
+
+function booleanQuestion (questionText, response = null) {
+  return new Promise((resolve) => {
+    const text = (() => {
+      if (response === true) return `${questionText} (Y/n) `
+      if (response === false) return `${questionText} (y/N) `
+
+      return `${questionText} (y/n) `
+    })()
+    readline.question(text, (answer) => {
+      if (answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes') {
+        return resolve(true)
+      }
+      if (answer.toLowerCase() === 'n' || answer.toLowerCase() === 'no') {
+        return resolve(false)
+      }
+      if (!answer && response !== null) {
+        return resolve(response)
+      }
+      resolve(booleanQuestion(questionText, response))
     })
   })
 }
@@ -85,7 +110,7 @@ async function populateAllData () {
   data.project.name = await question('What is your project name?', data.project.name)
   data.project.description = await question('What is your project description?', data.project.description)
   data.project.keywords = await question('What is your project keywords?', data.project.keywords)
-  data.git.user = process.env.GIT_USER || await question('What is your git user?', data.git.user)
+  data.git.user = await question('What is your git user?', data.git.user)
   readline.close()
 }
 
@@ -145,9 +170,62 @@ async function checkRequirements () {
   ])
 }
 
+function createRepo (gitUser, projecName) {
+  const url = 'https://api.github.com/user/repos'
+  const credentials = Buffer.from(`${gitUser}:${process.env.GH_TOKEN}`).toString('base64')
+
+  return new Promise((resolve, reject) => {
+    request.post({
+      url: url,
+      headers: {
+        'User-Agent': 'create-js-project',
+        Authorization: `Basic ${credentials}`,
+        Accept: 'application/vnd.github.v3+json',
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        allow_merge_commit: false,
+        allow_rebase_merge: false,
+        delete_branch_on_merge: true,
+        name: projecName,
+        description: data.project.description,
+      }),
+    }, (error, response, body) => {
+      if (error) {
+        return resolve(false)
+      }
+      if (response.statusCode === 422) {
+        console.log('Repository not created because already exists')
+      }
+      resolve(response.statusCode === 201)
+    })
+  })
+}
+
+function reposExists (gitUser, projecName) {
+  return new Promise((resolve, reject) => {
+    request.get({
+      headers: {
+        'User-Agent': 'create-js-project',
+      },
+      uri: `https://api.github.com/repos/${gitUser}/${projecName}`,
+      method: 'GET',
+    }, (error, response) => {
+      if (error) {
+        return resolve(false)
+      }
+      resolve(response.statusCode === 200)
+    })
+  })
+}
+
 async function git () {
   if (noGit) {
     return
+  }
+  const gitExisted = await reposExists(data.git.user, data.project.name)
+  if (!gitExisted && (yessAll || await question('What is your git user?', data.git.user))) {
+    await createRepo(data.git.user, data.project.name)
   }
   await run('rm -rf .git')
   await run('git init')
@@ -155,11 +233,13 @@ async function git () {
   await run('git commit -m "feat(core): init project"')
   await run('git branch -M main')
   await run(`git remote add origin git@github.com:${data.git.user}/${data.project.name}.git`)
-  try {
-    await run('git push -u origin main')
-    console.log(`Github repository pushed: https://github.com/${data.git.user}/${data.project.name}`)
-  } catch (err) {
-    console.log('[warning]: could not push project. Did you create the repos?')
+  if (!gitExisted) {
+    try {
+      await run('git push -u origin main')
+      console.log(`Github repository pushed: https://github.com/${data.git.user}/${data.project.name}`)
+    } catch (err) {
+      console.log('[warning]: could not push project. Did you create the repos?')
+    }
   }
 }
 
@@ -169,6 +249,9 @@ async function clean () {
 }
 
 (async () => {
+  const aa = await booleanQuestion('create github repo?', true)
+  console.log('aa', aa)
+  /*
   await checkRequirements()
   await populateAllData()
   await Promise.all([
@@ -179,4 +262,6 @@ async function clean () {
   ])
   await git()
   await clean()
+  */
+  readline.close()
 })()
