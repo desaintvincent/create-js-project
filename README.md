@@ -15,8 +15,9 @@ Create a javascript project ready to code
 ## Install
 ```sh
 git clone git@github.com:desaintvincent/create-js-project.git my-awesome-project
-yarn install
+cd my-awesome-project
 yarn setup
+yarn install
 ```
 
 ## Features

@@ -152,7 +152,7 @@ async function git () {
   await run('rm -rf .git')
   await run('git init')
   await run('git add --all -- \':!internal\'')
-  await run('git commit -m "feat(core): init project')
+  await run('git commit -m "feat(core): init project"')
   await run('git branch -M main')
   await run(`git remote add origin git@github.com:${data.git.user}/${data.project.name}.git`)
   try {
