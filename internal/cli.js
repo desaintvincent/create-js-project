@@ -104,7 +104,7 @@ async function createPackageJson () {
 async function createReadme () {
   const readme = await getFile('README.md')
   await writeFile('README.md', readme
-    .replace(/<!--- -->((.|\n)*)<!--- -->/gmis, `${data.project.description}\n# Install\n\`\`\`sh\nyarn install\n\`\`\``)
+    .replace(/<!--- -->((.|\n)*)<!--- -->/gmis, `${data.project.description}\n## Install\n\`\`\`sh\nyarn install\n\`\`\``)
     .replace(new RegExp(originalGithubUserName, 'g'), data.git.user)
     .replace(new RegExp(originalProjectName, 'g'), data.project.name),
   )
