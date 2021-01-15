@@ -19,6 +19,7 @@ const data = {
   },
   git: {
     user: process.env.GIT_USER || 'fakeUser',
+    public: true,
   },
 }
 
@@ -42,13 +43,19 @@ function question (questionText, defaultAnswer = '') {
 }
 
 function booleanQuestion (questionText, response = null) {
-  return new Promise((resolve) => {
-    const text = (() => {
-      if (response === true) return `${questionText} (Y/n) `
-      if (response === false) return `${questionText} (y/N) `
+  const text = (() => {
+    if (response === true) return `${questionText} (Y/n) `
+    if (response === false) return `${questionText} (y/N) `
 
-      return `${questionText} (y/n) `
-    })()
+    return `${questionText} (y/n) `
+  })()
+
+  return new Promise((resolve) => {
+    if (yessAll) {
+      resolve(response || true)
+
+      return
+    }
     readline.question(text, (answer) => {
       if (answer.toLowerCase() === 'y' || answer.toLowerCase() === 'yes') {
         return resolve(true)
@@ -59,6 +66,7 @@ function booleanQuestion (questionText, response = null) {
       if (!answer && response !== null) {
         return resolve(response)
       }
+
       resolve(booleanQuestion(questionText, response))
     })
   })
@@ -111,7 +119,6 @@ async function populateAllData () {
   data.project.description = await question('What is your project description?', data.project.description)
   data.project.keywords = await question('What is your project keywords?', data.project.keywords)
   data.git.user = await question('What is your git user?', data.git.user)
-  readline.close()
 }
 
 async function createPackageJson () {
@@ -174,23 +181,33 @@ function createRepo (gitUser, projecName) {
   const url = 'https://api.github.com/user/repos'
   const credentials = Buffer.from(`${gitUser}:${process.env.GH_TOKEN}`).toString('base64')
 
+  const postParam = {
+    url: url,
+    headers: {
+      'User-Agent': 'create-js-project',
+      Authorization: `Basic ${credentials}`,
+      Accept: 'application/vnd.github.v3+json',
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      allow_merge_commit: false,
+      allow_rebase_merge: false,
+      delete_branch_on_merge: true,
+      name: projecName,
+      private: !data.git.public,
+      description: data.project.description,
+      homepage: `https://${gitUser}.github.io/${projecName}/`,
+    }),
+  }
+
+  if (dryRun) {
+    console.log('=== create repo===', postParam)
+
+    return Promise.resolve(true)
+  }
+
   return new Promise((resolve, reject) => {
-    request.post({
-      url: url,
-      headers: {
-        'User-Agent': 'create-js-project',
-        Authorization: `Basic ${credentials}`,
-        Accept: 'application/vnd.github.v3+json',
-      },
-      method: 'POST',
-      body: JSON.stringify({
-        allow_merge_commit: false,
-        allow_rebase_merge: false,
-        delete_branch_on_merge: true,
-        name: projecName,
-        description: data.project.description,
-      }),
-    }, (error, response, body) => {
+    request.post(postParam, (error, response, body) => {
       if (error) {
         return resolve(false)
       }
@@ -223,8 +240,11 @@ async function git () {
   if (noGit) {
     return
   }
+
   const gitExisted = await reposExists(data.git.user, data.project.name)
-  if (!gitExisted && (yessAll || await question('What is your git user?', data.git.user))) {
+  if (!gitExisted) {
+    console.log(`github repo "${data.git.user}/${data.project.name}" does not exist, will be created...`)
+    data.git.public = await booleanQuestion('is github repo public?', true)
     await createRepo(data.git.user, data.project.name)
   }
   await run('rm -rf .git')
@@ -244,14 +264,12 @@ async function git () {
 }
 
 async function clean () {
+  readline.close()
   await run('rm -rf internal')
   console.log('All done. Happy coding!')
 }
 
 (async () => {
-  const aa = await booleanQuestion('create github repo?', true)
-  console.log('aa', aa)
-  /*
   await checkRequirements()
   await populateAllData()
   await Promise.all([
@@ -262,6 +280,4 @@ async function clean () {
   ])
   await git()
   await clean()
-  */
-  readline.close()
 })()
