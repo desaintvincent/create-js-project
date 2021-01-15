@@ -70,8 +70,10 @@
     "style-loader": "2.0.0",
     "stylelint": "13.7.2",
     "stylelint-config-sass-guidelines": "7.1.0",
+    "tweetsodium": "^0.0.5",
     "webpack": "5.4.0",
     "webpack-cli": "4.2.0",
     "webpack-dev-server": "3.11.0"
-  }
+  },
+  "dependencies": {}
 }

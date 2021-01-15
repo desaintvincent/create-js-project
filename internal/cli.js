@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+const sodium = require('tweetsodium')
 const path = require('path')
 const fs = require('fs')
 const { exec } = require('child_process')
@@ -21,6 +22,15 @@ const data = {
     user: process.env.GIT_USER || 'fakeUser',
     public: true,
   },
+}
+
+function encrypt (value, key) {
+  const messageBytes = Buffer.from(value)
+  const keyBytes = Buffer.from(key, 'base64')
+
+  const encryptedBytes = sodium.seal(messageBytes, keyBytes)
+
+  return Buffer.from(encryptedBytes).toString('base64')
 }
 
 const readline = require('readline').createInterface({
@@ -130,6 +140,7 @@ async function createPackageJson () {
   packageJsonData.keywords = data.project.keywords.split(',')
   packageJsonData.repository.url = `https://github.com/${data.git.user}/${data.project.name}.git`
   delete packageJsonData.scripts.setup
+  delete packageJsonData.devDependencies.tweetsodium
   await writeFile('package.json', JSON.stringify(packageJsonData, null, 2))
 }
 
@@ -220,10 +231,14 @@ function createRepo (gitUser, projecName) {
 }
 
 function reposExists (gitUser, projecName) {
+  const credentials = Buffer.from(`${gitUser}:${process.env.GH_TOKEN}`).toString('base64')
+
   return new Promise((resolve, reject) => {
     request.get({
       headers: {
         'User-Agent': 'create-js-project',
+        Authorization: `Basic ${credentials}`,
+        Accept: 'application/vnd.github.v3+json',
       },
       uri: `https://api.github.com/repos/${gitUser}/${projecName}`,
       method: 'GET',
@@ -236,8 +251,59 @@ function reposExists (gitUser, projecName) {
   })
 }
 
+async function setSecret (gitUser, projecName) {
+  const credentials = Buffer.from(`${gitUser}:${process.env.GH_TOKEN}`).toString('base64')
+
+  const { key, key_id: keyId } = await new Promise((resolve, reject) => {
+    request.get({
+      headers: {
+        'User-Agent': 'create-js-project',
+        Authorization: `Basic ${credentials}`,
+        Accept: 'application/vnd.github.v3+json',
+      },
+      uri: `https://api.github.com/repos/${gitUser}/${projecName}/actions/secrets/public-key`,
+      method: 'GET',
+    }, (error, response) => {
+      if (error) {
+        return reject(error)
+      }
+      resolve(JSON.parse(response.body))
+    })
+  })
+
+  const options = {
+    method: 'PUT',
+    uri: `https://api.github.com/repos/${gitUser}/${projecName}/actions/secrets/GH_TOKEN`,
+    headers: {
+      Accept: 'application/vnd.github.v3+json',
+      Authorization: `Basic ${credentials}`,
+      'User-Agent': 'create-js-project',
+    },
+    body: JSON.stringify({
+      encrypted_value: encrypt(process.env.GH_TOKEN, key),
+      key_id: keyId,
+    }),
+  }
+
+  await new Promise((resolve, reject) => {
+    request(options, (error, response) => {
+      if (error) {
+        reject(error)
+
+        return
+      }
+      if (response.statusCode !== 201) {
+        reject(response)
+
+        return
+      }
+      resolve(true)
+    })
+  })
+}
+
 async function git () {
-  if (noGit) {
+  if (noGit || !process.env.GH_TOKEN) {
     return
   }
 
@@ -246,6 +312,7 @@ async function git () {
     console.log(`github repo "${data.git.user}/${data.project.name}" does not exist, will be created...`)
     data.git.public = await booleanQuestion('is github repo public?', true)
     await createRepo(data.git.user, data.project.name)
+    await setSecret(data.git.user, data.project.name)
   }
   await run('rm -rf .git')
   await run('git init')
@@ -270,14 +337,18 @@ async function clean () {
 }
 
 (async () => {
-  await checkRequirements()
-  await populateAllData()
-  await Promise.all([
-    createPackageJson(),
-    createReadme(),
-    createLicense(),
-    createChangelog(),
-  ])
-  await git()
-  await clean()
+  try {
+    await checkRequirements()
+    await populateAllData()
+    await Promise.all([
+      createPackageJson(),
+      createReadme(),
+      createLicense(),
+      createChangelog(),
+    ])
+    await git()
+    await clean()
+  } catch (error) {
+    console.log('error', error)
+  }
 })()
