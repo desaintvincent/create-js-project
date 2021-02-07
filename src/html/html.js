@@ -8,7 +8,8 @@ module.exports = ({ htmlWebpackPlugin }) => {
         <title>${htmlWebpackPlugin.options.title}</title>
       </head>
       <body>
-      <div id="root">${htmlWebpackPlugin.options.body ? require('' + htmlWebpackPlugin.options.body) : ''}</div></body>
+        <div id="root">${htmlWebpackPlugin.options.body ? require('' + htmlWebpackPlugin.options.body) : ''}</div>
+      </body>
     </html>
   `
 }
