@@ -1,3 +1,21 @@
+# [1.2.0](https://github.com/desaintvincent/starter/compare/v1.1.0...v1.2.0) (2021-07-21)
+
+
+### Bug Fixes
+
+* **cli:** syntax error ([12de987](https://github.com/desaintvincent/starter/commit/12de98725ba52d67310d96d5e4a5caac07b7ea3b))
+* **cli:** typo ([#8](https://github.com/desaintvincent/starter/issues/8)) ([5653671](https://github.com/desaintvincent/starter/commit/56536716582118e0fe781642374623f43c6dcbd1))
+* **readme:** manually add start of changelog ([861ba7e](https://github.com/desaintvincent/starter/commit/861ba7e2fe1236f5adfe4422aa00b8bd0b84aaa1))
+
+
+### Features
+
+* **cli:** create github repository ([55ac781](https://github.com/desaintvincent/starter/commit/55ac7812d44f3c0297b579b3171133e96292d060))
+* **cli:** setup projects from template ([d56d324](https://github.com/desaintvincent/starter/commit/d56d3240edccdd5c028ea88ea2a19b6dc59adc0f))
+* **core:** add license ([8ab7399](https://github.com/desaintvincent/starter/commit/8ab739969c32f7052d4069317076f6714eab710f))
+* **html:** hot reload html ([e14bc4a](https://github.com/desaintvincent/starter/commit/e14bc4a49bc032349f15bec9e967917a477668ea))
+* **lint:** add commitlint ([8c86079](https://github.com/desaintvincent/starter/commit/8c860795435ecf43b2b949b50853c8730ac14ad9))
+
 # [1.1.0](https://github.com/desaintvincent/starter/compare/v1.0.2...v1.1.0) (2020-11-09)
 
 ### Features
